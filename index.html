@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prayer Tracker</title>
+<title>Prayer & Quran Tracker</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
 <style>
 body {
     font-family: 'Cairo', sans-serif;
     font-weight: bold;
     direction: rtl;
-    padding: 20px;
     background-color: #121212;
     color: #e0e0e0;
+    padding: 20px;
 }
 table {
     width: 100%;
@@ -70,6 +70,7 @@ th {
     border: 1px solid #555;
     background-color: #1e1e1e;
     color: #e0e0e0;
+    min-width: 100px;
 }
 .quran-entry select:hover, .quran-entry input:hover {
     border-color: #4caf50;
@@ -148,7 +149,24 @@ const surahs = [
     {name: 'هود', ayat: 123}, {name: 'يوسف', ayat: 111}, {name: 'الرعد', ayat: 43}, {name: 'إبراهيم', ayat: 52}, {name: 'الحجر', ayat: 99},
     {name: 'النحل', ayat: 128}, {name: 'الإسراء', ayat: 111}, {name: 'الكهف', ayat: 110}, {name: 'مريم', ayat: 98}, {name: 'طه', ayat: 135},
     {name: 'الأنبياء', ayat: 112}, {name: 'الحج', ayat: 78}, {name: 'المؤمنون', ayat: 118}, {name: 'النور', ayat: 64}, {name: 'الفرقان', ayat: 77},
-    // يمكنك إضافة بقية السور بالعدد الفعلي للآيات هنا
+    {name: 'الشعراء', ayat: 227}, {name: 'النمل', ayat: 93}, {name: 'القصص', ayat: 88}, {name: 'العنكبوت', ayat: 69}, {name: 'الروم', ayat: 60},
+    {name: 'لقمان', ayat: 34}, {name: 'السجدة', ayat: 30}, {name: 'الأحزاب', ayat: 73}, {name: 'سبأ', ayat: 54}, {name: 'فاطر', ayat: 45},
+    {name: 'يس', ayat: 83}, {name: 'الصافات', ayat: 182}, {name: 'ص', ayat: 88}, {name: 'الزمر', ayat: 75}, {name: 'غافر', ayat: 85},
+    {name: 'فصلت', ayat: 54}, {name: 'الشورى', ayat: 53}, {name: 'الزخرف', ayat: 89}, {name: 'الدخان', ayat: 59}, {name: 'الجاثية', ayat: 37},
+    {name: 'الأحقاف', ayat: 35}, {name: 'محمد', ayat: 38}, {name: 'الفتح', ayat: 29}, {name: 'الحجرات', ayat: 18}, {name: 'ق', ayat: 45},
+    {name: 'الذاريات', ayat: 60}, {name: 'الطور', ayat: 49}, {name: 'النجم', ayat: 62}, {name: 'القمر', ayat: 55}, {name: 'الرحمن', ayat: 78},
+    {name: 'الواقعة', ayat: 96}, {name: 'الحديد', ayat: 29}, {name: 'المجادلة', ayat: 22}, {name: 'الحشر', ayat: 24}, {name: 'الممتحنة', ayat: 13},
+    {name: 'الصف', ayat: 14}, {name: 'الجمعة', ayat: 11}, {name: 'المنافقون', ayat: 11}, {name: 'التغابن', ayat: 18}, {name: 'الطلاق', ayat: 12},
+    {name: 'التحريم', ayat: 12}, {name: 'الملك', ayat: 30}, {name: 'القلم', ayat: 52}, {name: 'الحاقة', ayat: 52}, {name: 'المعارج', ayat: 44},
+    {name: 'نوح', ayat: 28}, {name: 'الجن', ayat: 28}, {name: 'المزمل', ayat: 20}, {name: 'المدثر', ayat: 56}, {name: 'القيامة', ayat: 40},
+    {name: 'الانسان', ayat: 31}, {name: 'المرسلات', ayat: 50}, {name: 'النبأ', ayat: 40}, {name: 'النازعات', ayat: 46}, {name: 'عبس', ayat: 42},
+    {name: 'التكوير', ayat: 29}, {name: 'الانفطار', ayat: 19}, {name: 'المطففين', ayat: 36}, {name: 'الانشقاق', ayat: 25}, {name: 'البروج', ayat: 22},
+    {name: 'الطارق', ayat: 17}, {name: 'الأعلى', ayat: 19}, {name: 'الغاشية', ayat: 26}, {name: 'الفجر', ayat: 30}, {name: 'البلد', ayat: 20},
+    {name: 'الشمس', ayat: 15}, {name: 'الليل', ayat: 21}, {name: 'الضحى', ayat: 11}, {name: 'الشرح', ayat: 8}, {name: 'التين', ayat: 8},
+    {name: 'العلق', ayat: 19}, {name: 'القدر', ayat: 5}, {name: 'البينة', ayat: 8}, {name: 'الزلزلة', ayat: 8}, {name: 'العاديات', ayat: 11},
+    {name: 'القارعة', ayat: 11}, {name: 'التكاثر', ayat: 8}, {name: 'العصر', ayat: 3}, {name: 'الهمزة', ayat: 9}, {name: 'الفيل', ayat: 5},
+    {name: 'قريش', ayat: 4}, {name: 'الماعون', ayat: 7}, {name: 'الكوثر', ayat: 3}, {name: 'الكافرون', ayat: 6}, {name: 'النصر', ayat: 3},
+    {name: 'المسد', ayat: 5}, {name: 'الإخلاص', ayat: 4}, {name: 'الفلق', ayat: 5}, {name: 'الناس', ayat: 6}
 ];
 
 const startDate = new Date('2026-01-01');
@@ -159,6 +177,7 @@ const azkarTbody = document.querySelector('#azkarTable tbody');
 for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     const dateStr = d.toLocaleDateString('ar-EG');
 
+    // جدول الصلوات
     const pRow = document.createElement('tr');
     const dateCell = document.createElement('td');
     dateCell.textContent = dateStr;
@@ -174,7 +193,6 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         cell.appendChild(box);
         pRow.appendChild(cell);
         boxes.push(box);
-
         box.addEventListener('click', () => {
             box.classList.toggle('checked');
             const checkedCount = boxes.filter(b => b.classList.contains('checked')).length;
@@ -193,6 +211,7 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     pRow.appendChild(progressCell);
     prayerTbody.appendChild(pRow);
 
+    // جدول الأذكار والورد
     const aRow = document.createElement('tr');
     const aDateCell = document.createElement('td');
     aDateCell.textContent = dateStr;
@@ -265,8 +284,14 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         editBtn.classList.add('edit-quran');
 
         markBtn.addEventListener('click', () => {
+            const max = parseInt(selectSurah.selectedOptions[0].dataset.ayat);
+            if(fromInput.value > max || toInput.value > max) {
+                errorMsg.textContent = `الحد الأقصى لآيات هذه السورة هو ${max}`;
+                return;
+            }
             if(fromInput.value && toInput.value) {
                 entryDiv.classList.add('read');
+                errorMsg.textContent = '';
             }
         });
 
@@ -290,13 +315,4 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     addButton.classList.add('add-quran');
     addButton.addEventListener('click', addQuranEntry);
 
-    quranCell.appendChild(addButton);
-    addQuranEntry();
-    aRow.appendChild(quranCell);
-
-    azkarTbody.appendChild(aRow);
-}
-</script>
-
-</body>
-</html>
+    quranCell
