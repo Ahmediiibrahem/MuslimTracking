@@ -94,6 +94,158 @@ const surahs = [
 
 // باقي كود إنشاء الجداول والورد القرآني كما هو مع التعديلات الأخيرة (تم/تعديل/حذف) بنفس المنطق السابق
 
+
+const startDate = new Date('2026-01-01');
+const endDate = new Date('2026-01-31');
+const prayerTbody = document.querySelector('#prayerTable tbody');
+const azkarTbody = document.querySelector('#azkarTable tbody');
+
+for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    const dateStr = d.toLocaleDateString('ar-EG');
+
+    // جدول الصلوات
+    const pRow = document.createElement('tr');
+    const dateCell = document.createElement('td');
+    dateCell.textContent = dateStr;
+    pRow.appendChild(dateCell);
+
+    const prayers = ['الفجر','الضحى','الظهر','العصر','المغرب','العشاء'];
+    const boxes = [];
+
+    prayers.forEach(() => {
+        const cell = document.createElement('td');
+        const box = document.createElement('div');
+        box.classList.add('box');
+        cell.appendChild(box);
+        pRow.appendChild(cell);
+        boxes.push(box);
+        box.addEventListener('click', () => {
+            box.classList.toggle('checked');
+            const checkedCount = boxes.filter(b => b.classList.contains('checked')).length;
+            const percent = Math.round((checkedCount / boxes.length) * 100);
+            progressFill.style.width = percent + '%';
+        });
+    });
+
+    const progressCell = document.createElement('td');
+    const progressBar = document.createElement('div');
+    progressBar.classList.add('progress-bar');
+    const progressFill = document.createElement('div');
+    progressFill.classList.add('progress-fill');
+    progressBar.appendChild(progressFill);
+    progressCell.appendChild(progressBar);
+    pRow.appendChild(progressCell);
+    prayerTbody.appendChild(pRow);
+
+    // جدول الأذكار والورد
+    const aRow = document.createElement('tr');
+    const aDateCell = document.createElement('td');
+    aDateCell.textContent = dateStr;
+    aRow.appendChild(aDateCell);
+
+    ['أذكار الصباح','أذكار المساء'].forEach(() => {
+        const cell = document.createElement('td');
+        const box = document.createElement('div');
+        box.classList.add('box');
+        cell.appendChild(box);
+        aRow.appendChild(cell);
+        box.addEventListener('click', () => box.classList.toggle('checked'));
+    });
+
+    const quranCell = document.createElement('td');
+    const errorMsg = document.createElement('div');
+    errorMsg.classList.add('error-msg');
+    quranCell.appendChild(errorMsg);
+
+    function addQuranEntry() {
+        const lastEntry = quranCell.querySelector('.quran-entry:last-of-type');
+        if(lastEntry) {
+            const select = lastEntry.querySelector('select');
+            const from = lastEntry.querySelector('input:nth-of-type(1)');
+            const to = lastEntry.querySelector('input:nth-of-type(2)');
+            if(!select.value || !from.value || !to.value) {
+                errorMsg.textContent = 'اكمل الورد السابق أولاً!';
+                return;
+            } else {
+                errorMsg.textContent = '';
+            }
+        }
+
+        const entryDiv = document.createElement('div');
+        entryDiv.classList.add('quran-entry');
+
+        const selectSurah = document.createElement('select');
+        surahs.forEach(surah => {
+            const option = document.createElement('option');
+            option.value = surah.name;
+            option.textContent = surah.name;
+            option.dataset.ayat = surah.ayat;
+            selectSurah.appendChild(option);
+        });
+
+        const fromInput = document.createElement('input');
+        fromInput.type = 'number';
+        fromInput.min = 1;
+        fromInput.placeholder = 'من';
+
+        const toInput = document.createElement('input');
+        toInput.type = 'number';
+        toInput.min = 1;
+        toInput.placeholder = 'إلى';
+
+        selectSurah.addEventListener('change', () => {
+            const max = parseInt(selectSurah.selectedOptions[0].dataset.ayat);
+            fromInput.max = max;
+            toInput.max = max;
+            if(parseInt(fromInput.value) > max) fromInput.value = max;
+            if(parseInt(toInput.value) > max) toInput.value = max;
+        });
+
+        const markBtn = document.createElement('div');
+        markBtn.textContent = 'تم';
+        markBtn.classList.add('mark-read');
+
+        const editBtn = document.createElement('div');
+        editBtn.textContent = 'تعديل';
+        editBtn.classList.add('edit-quran');
+
+        markBtn.addEventListener('click', () => {
+            const max = parseInt(selectSurah.selectedOptions[0].dataset.ayat);
+            if(fromInput.value > max || toInput.value > max) {
+                errorMsg.textContent = `الحد الأقصى لآيات هذه السورة هو ${max}`;
+                return;
+            }
+            if(fromInput.value && toInput.value) {
+                entryDiv.classList.add('read');
+                errorMsg.textContent = '';
+            }
+        });
+
+        editBtn.addEventListener('click', () => {
+            if(entryDiv.classList.contains('read')) {
+                entryDiv.classList.remove('read');
+            }
+        });
+
+        entryDiv.appendChild(selectSurah);
+        entryDiv.appendChild(fromInput);
+        entryDiv.appendChild(toInput);
+        entryDiv.appendChild(markBtn);
+        entryDiv.appendChild(editBtn);
+
+        quranCell.insertBefore(entryDiv, addButton);
+    }
+
+    const addButton = document.createElement('button');
+    addButton.textContent = '+ إضافة ورد';
+    addButton.classList.add('add-quran');
+    addButton.addEventListener('click', addQuranEntry);
+
+    quranCell.appendChild(addButton);
+    addQuranEntry();
+    aRow.appendChild(quranCell);
+    azkarTbody.appendChild(aRow);
+}
 </script>
 
 </body>
