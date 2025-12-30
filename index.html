@@ -28,7 +28,16 @@ th { background-color: #1f1f1f; }
 .mark-read, .edit-quran, .delete-quran { margin-left: 5px; padding: 2px 6px; font-weight: bold; cursor: pointer; border-radius: 4px; }
 .mark-read { background-color: #4caf50; color: #fff; }
 .edit-quran { background-color: #ff9800; color: #fff; }
-.delete-quran { background-color: #f44336; color: #fff; }
+.delete-quran {
+    background-color: #f44336;
+    color: #fff;
+    margin-left: 5px;
+    padding: 2px 6px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
 .quran-entry.read input, .quran-entry.read select { pointer-events: none; opacity: 0.6; background-color: #2e2e2e; }
 .error-msg { color: #f44336; font-weight: bold; margin-top: 5px; }
 </style>
@@ -233,6 +242,8 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         entryDiv.appendChild(markBtn);
         entryDiv.appendChild(editBtn);
 
+        
+
         quranCell.insertBefore(entryDiv, addButton);
     }
 
@@ -245,7 +256,17 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     addQuranEntry();
     aRow.appendChild(quranCell);
     azkarTbody.appendChild(aRow);
+
 }
+
+    const deleteBtn = document.createElement('div');
+deleteBtn.textContent = '×';
+deleteBtn.classList.add('delete-quran');
+deleteBtn.addEventListener('click', () => {
+    quranCell.removeChild(entryDiv);
+});
+entryDiv.appendChild(deleteBtn);
+
 </script>
 
 </body>
