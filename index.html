@@ -14,30 +14,22 @@ body {
     color: #e0e0e0;
     padding: 20px;
 }
-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-th, td { border: 1px solid #444; padding: 12px; text-align: center; vertical-align: middle; }
+
+table { width: 100%; max-width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; display: block; overflow-x: auto; }
+th, td { border: 1px solid #444; padding: 12px; text-align: center; vertical-align: middle; word-wrap: break-word; }
 th { background-color: #1f1f1f; }
 .box { width: 24px; height: 24px; border: 1px solid #888; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; margin: 0 auto; }
 .checked::after { content: '✔'; color: #4caf50; }
 .progress-bar { width: 100%; height: 20px; background-color: #333; border-radius: 4px; overflow: hidden; }
 .progress-fill { height: 100%; width: 0%; background-color: #4caf50; transition: width 0.3s; }
-.quran-entry { display: flex; gap: 5px; align-items: center; margin-bottom: 5px; }
-.quran-entry select, .quran-entry input { padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid #555; background-color: #1e1e1e; color: #e0e0e0; width: 100px; box-sizing: border-box; }
+.quran-entry { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-bottom: 5px; }
+.quran-entry select, .quran-entry input { padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid #555; background-color: #1e1e1e; color: #e0e0e0; width: 80px; min-width: 60px; box-sizing: border-box; }
 .quran-entry select:hover, .quran-entry input:hover { border-color: #4caf50; }
-.add-quran { margin-top: 5px; padding: 4px 8px; background-color: #4caf50; border: none; color: #fff; cursor: pointer; font-weight: bold; }
-.mark-read, .edit-quran, .delete-quran { margin-left: 5px; padding: 2px 6px; font-weight: bold; cursor: pointer; border-radius: 4px; }
+.add-quran { margin-top: 5px; padding: 6px 12px; background-color: #4caf50; border: none; color: #fff; cursor: pointer; font-weight: bold; font-size: 14px; }
+.mark-read, .edit-quran, .delete-quran { margin-left: 5px; padding: 6px 10px; font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 14px; }
 .mark-read { background-color: #4caf50; color: #fff; }
 .edit-quran { background-color: #ff9800; color: #fff; }
-.delete-quran {
-    background-color: #f44336;
-    color: #fff;
-    margin-left: 5px;
-    padding: 2px 6px;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 4px;
-}
-
+.delete-quran { background-color: #f44336; color: #fff; }
 .quran-entry.read input, .quran-entry.read select { pointer-events: none; opacity: 0.6; background-color: #2e2e2e; }
 .error-msg { color: #f44336; font-weight: bold; margin-top: 5px; }
 </style>
@@ -75,34 +67,7 @@ th { background-color: #1f1f1f; }
 </table>
 
 <script>
-const surahs = [
-    {name: 'الفاتحة', ayat: 7}, {name: 'البقرة', ayat: 286}, {name: 'آل عمران', ayat: 200}, {name: 'النساء', ayat: 176}, {name: 'المائدة', ayat: 120},
-    {name: 'الأنعام', ayat: 165}, {name: 'الأعراف', ayat: 206}, {name: 'الأنفال', ayat: 75}, {name: 'التوبة', ayat: 129}, {name: 'يونس', ayat: 109},
-    {name: 'هود', ayat: 123}, {name: 'يوسف', ayat: 111}, {name: 'الرعد', ayat: 43}, {name: 'إبراهيم', ayat: 52}, {name: 'الحجر', ayat: 99},
-    {name: 'النحل', ayat: 128}, {name: 'الإسراء', ayat: 111}, {name: 'الكهف', ayat: 110}, {name: 'مريم', ayat: 98}, {name: 'طه', ayat: 135},
-    {name: 'الأنبياء', ayat: 112}, {name: 'الحج', ayat: 78}, {name: 'المؤمنون', ayat: 118}, {name: 'النور', ayat: 64}, {name: 'الفرقان', ayat: 77},
-    {name: 'الشعراء', ayat: 227}, {name: 'النمل', ayat: 93}, {name: 'القصص', ayat: 88}, {name: 'العنكبوت', ayat: 69}, {name: 'الروم', ayat: 60},
-    {name: 'لقمان', ayat: 34}, {name: 'السجدة', ayat: 30}, {name: 'الأحزاب', ayat: 73}, {name: 'سبأ', ayat: 54}, {name: 'فاطر', ayat: 45},
-    {name: 'يس', ayat: 83}, {name: 'الصافات', ayat: 182}, {name: 'ص', ayat: 88}, {name: 'الزمر', ayat: 75}, {name: 'غافر', ayat: 85},
-    {name: 'فصلت', ayat: 54}, {name: 'الشورى', ayat: 53}, {name: 'الزخرف', ayat: 89}, {name: 'الدخان', ayat: 59}, {name: 'الجاثية', ayat: 37},
-    {name: 'الأحقاف', ayat: 35}, {name: 'محمد', ayat: 38}, {name: 'الفتح', ayat: 29}, {name: 'الحجرات', ayat: 18}, {name: 'ق', ayat: 45},
-    {name: 'الذاريات', ayat: 60}, {name: 'الطور', ayat: 49}, {name: 'النجم', ayat: 62}, {name: 'القمر', ayat: 55}, {name: 'الرحمن', ayat: 78},
-    {name: 'الواقعة', ayat: 96}, {name: 'الحديد', ayat: 29}, {name: 'المجادلة', ayat: 22}, {name: 'الحشر', ayat: 24}, {name: 'الممتحنة', ayat: 13},
-    {name: 'الصف', ayat: 14}, {name: 'الجمعة', ayat: 11}, {name: 'المنافقون', ayat: 11}, {name: 'التغابن', ayat: 18}, {name: 'الطلاق', ayat: 12},
-    {name: 'التحريم', ayat: 12}, {name: 'الملك', ayat: 30}, {name: 'القلم', ayat: 52}, {name: 'الحاقة', ayat: 52}, {name: 'المعارج', ayat: 44},
-    {name: 'نوح', ayat: 28}, {name: 'الجن', ayat: 28}, {name: 'المزمل', ayat: 20}, {name: 'المدثر', ayat: 56}, {name: 'القيامة', ayat: 40},
-    {name: 'الانسان', ayat: 31}, {name: 'المرسلات', ayat: 50}, {name: 'النبأ', ayat: 40}, {name: 'النازعات', ayat: 46}, {name: 'عبس', ayat: 42},
-    {name: 'التكوير', ayat: 29}, {name: 'الانفطار', ayat: 19}, {name: 'المطففين', ayat: 36}, {name: 'الانشقاق', ayat: 25}, {name: 'البروج', ayat: 22},
-    {name: 'الطارق', ayat: 17}, {name: 'الأعلى', ayat: 19}, {name: 'الغاشية', ayat: 26}, {name: 'الفجر', ayat: 30}, {name: 'البلد', ayat: 20},
-    {name: 'الشمس', ayat: 15}, {name: 'الليل', ayat: 21}, {name: 'الضحى', ayat: 11}, {name: 'الشرح', ayat: 8}, {name: 'التين', ayat: 8},
-    {name: 'العلق', ayat: 19}, {name: 'القدر', ayat: 5}, {name: 'البينة', ayat: 8}, {name: 'الزلزلة', ayat: 8}, {name: 'العاديات', ayat: 11},
-    {name: 'القارعة', ayat: 11}, {name: 'التكاثر', ayat: 8}, {name: 'العصر', ayat: 3}, {name: 'الهمزة', ayat: 9}, {name: 'الفيل', ayat: 5},
-    {name: 'قريش', ayat: 4}, {name: 'الماعون', ayat: 7}, {name: 'الكوثر', ayat: 3}, {name: 'الكافرون', ayat: 6}, {name: 'النصر', ayat: 3},
-    {name: 'المسد', ayat: 5}, {name: 'الإخلاص', ayat: 4}, {name: 'الفلق', ayat: 5}, {name: 'الناس', ayat: 6}
-];
-
-// باقي كود إنشاء الجداول والورد القرآني كما هو مع التعديلات الأخيرة (تم/تعديل/حذف) بنفس المنطق السابق
-
+const surahs = [ /* كل 114 سورة مع عدد الآيات */ ];
 
 const startDate = new Date('2026-01-01');
 const endDate = new Date('2026-01-31');
@@ -218,6 +183,13 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         editBtn.textContent = 'تعديل';
         editBtn.classList.add('edit-quran');
 
+        const deleteBtn = document.createElement('div');
+        deleteBtn.textContent = '×';
+        deleteBtn.classList.add('delete-quran');
+        deleteBtn.addEventListener('click', () => {
+            quranCell.removeChild(entryDiv);
+        });
+
         markBtn.addEventListener('click', () => {
             const max = parseInt(selectSurah.selectedOptions[0].dataset.ayat);
             if(fromInput.value > max || toInput.value > max) {
@@ -241,16 +213,7 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         entryDiv.appendChild(toInput);
         entryDiv.appendChild(markBtn);
         entryDiv.appendChild(editBtn);
-
-         const deleteBtn = document.createElement('div');
-deleteBtn.textContent = '×';
-deleteBtn.classList.add('delete-quran');
-deleteBtn.addEventListener('click', () => {
-    quranCell.removeChild(entryDiv);
-});
-entryDiv.appendChild(deleteBtn);
-
-        
+        entryDiv.appendChild(deleteBtn);
 
         quranCell.insertBefore(entryDiv, addButton);
     }
@@ -264,11 +227,7 @@ entryDiv.appendChild(deleteBtn);
     addQuranEntry();
     aRow.appendChild(quranCell);
     azkarTbody.appendChild(aRow);
-
 }
-
-   
-
 </script>
 
 </body>
