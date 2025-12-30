@@ -1,112 +1,112 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prayer Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            font-weight: bold;
-            direction: rtl;
-            padding: 20px;
-            background-color: #121212;
-            color: #e0e0e0;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #444;
-            padding: 12px;
-            text-align: center;
-            vertical-align: middle;
-        }
-        th {
-            background-color: #1f1f1f;
-        }
-        .box {
-            width: 24px;
-            height: 24px;
-            border: 1px solid #888;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            font-size: 18px;
-            margin: 0 auto;
-        }
-        .checked::after {
-            content: '✔';
-            color: #4caf50;
-        }
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background-color: #333;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            width: 0%;
-            background-color: #4caf50;
-            transition: width 0.3s;
-        }
-        .quran-entry {
-            display: flex;
-            gap: 5px;
-            margin-bottom: 5px;
-        }
-        .quran-entry select, .quran-entry input {
-            padding: 4px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .add-quran {
-            margin-top: 5px;
-            padding: 4px 8px;
-            background-color: #4caf50;
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prayer Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
+<style>
+body {
+    font-family: 'Cairo', sans-serif;
+    font-weight: bold;
+    direction: rtl;
+    padding: 20px;
+    background-color: #121212;
+    color: #e0e0e0;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+th, td {
+    border: 1px solid #444;
+    padding: 12px;
+    text-align: center;
+    vertical-align: middle;
+}
+th {
+    background-color: #1f1f1f;
+}
+.box {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #888;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 18px;
+    margin: 0 auto;
+}
+.checked::after {
+    content: '✔';
+    color: #4caf50;
+}
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #333;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #4caf50;
+    transition: width 0.3s;
+}
+.quran-entry {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 5px;
+}
+.quran-entry select, .quran-entry input {
+    padding: 4px;
+    font-weight: bold;
+    text-align: center;
+}
+.add-quran {
+    margin-top: 5px;
+    padding: 4px 8px;
+    background-color: #4caf50;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-weight: bold;
+}
+</style>
 </head>
 <body>
 
 <h2>جدول الصلوات</h2>
 <table id="prayerTable">
-    <thead>
-        <tr>
-            <th>اليوم</th>
-            <th>الفجر</th>
-            <th>الضحى</th>
-            <th>الظهر</th>
-            <th>العصر</th>
-            <th>المغرب</th>
-            <th>العشاء</th>
-            <th>الإنجاز</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
+<thead>
+<tr>
+<th>اليوم</th>
+<th>الفجر</th>
+<th>الضحى</th>
+<th>الظهر</th>
+<th>العصر</th>
+<th>المغرب</th>
+<th>العشاء</th>
+<th>الإنجاز</th>
+</tr>
+</thead>
+<tbody></tbody>
 </table>
 
 <h2>جدول الأذكار والورد القرآني</h2>
 <table id="azkarTable">
-    <thead>
-        <tr>
-            <th>اليوم</th>
-            <th>أذكار الصباح</th>
-            <th>أذكار المساء</th>
-            <th>الورد القرآني</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
+<thead>
+<tr>
+<th>اليوم</th>
+<th>أذكار الصباح</th>
+<th>أذكار المساء</th>
+<th>الورد القرآني</th>
+</tr>
+</thead>
+<tbody></tbody>
 </table>
 
 <script>
@@ -138,9 +138,15 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         cell.appendChild(box);
         pRow.appendChild(cell);
         boxes.push(box);
+
+        box.addEventListener('click', () => {
+            box.classList.toggle('checked');
+            const checkedCount = boxes.filter(b => b.classList.contains('checked')).length;
+            const percent = Math.round((checkedCount / boxes.length) * 100);
+            progressFill.style.width = percent + '%';
+        });
     });
 
-    // عمود الإنجاز
     const progressCell = document.createElement('td');
     const progressBar = document.createElement('div');
     progressBar.classList.add('progress-bar');
@@ -152,23 +158,13 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
 
     prayerTbody.appendChild(pRow);
 
-    // إضافة حدث لكل مربع داخل الصف
-    boxes.forEach(box => {
-        box.addEventListener('click', () => {
-            box.classList.toggle('checked');
-            const checkedCount = boxes.filter(b => b.classList.contains('checked')).length;
-            const percent = Math.round((checkedCount / boxes.length) * 100);
-            progressFill.style.width = percent + '%';
-        });
-    });
-
     // جدول الأذكار والورد
     const aRow = document.createElement('tr');
     const aDateCell = document.createElement('td');
     aDateCell.textContent = dateStr;
     aRow.appendChild(aDateCell);
 
-    ['أذكار الصباح','أذكار المساء'].forEach(item => {
+    ['أذكار الصباح','أذكار المساء'].forEach(() => {
         const cell = document.createElement('td');
         const box = document.createElement('div');
         box.classList.add('box');
@@ -177,7 +173,6 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         box.addEventListener('click', () => box.classList.toggle('checked'));
     });
 
-    // الورد القرآني متعدد الأسطر
     const quranCell = document.createElement('td');
     function addQuranEntry() {
         const entryDiv = document.createElement('div');
@@ -214,8 +209,12 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     addButton.addEventListener('click', addQuranEntry);
 
     quranCell.appendChild(addButton);
-    addQuranEntry(); // إضافة أول ورد تلقائي
+    addQuranEntry();
     aRow.appendChild(quranCell);
 
     azkarTbody.appendChild(aRow);
 }
+</script>
+
+</body>
+</html>
