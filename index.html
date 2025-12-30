@@ -75,6 +75,11 @@ th {
     cursor: pointer;
     font-weight: bold;
 }
+.error-msg {
+    color: #f44336;
+    font-weight: bold;
+    margin-top: 5px;
+}
 </style>
 </head>
 <body>
@@ -111,7 +116,12 @@ th {
 
 <script>
 const surahs = [
-    'الفاتحة','البقرة','آل عمران','النساء','المائدة','الأنعام','الأعراف','الأنفال','التوبة','يونس','هود','يوسف','الرعد','إبراهيم','الحجر','النحل','الإسراء','الكهف','مريم','طه','الأنبياء','الحج','المؤمنون','النور','الفرقان','الشعراء','النمل','القصص','العنكبوت','الروم','لقمان','السجدة','الأحزاب','سبأ','فاطر','يس','الصافات','ص','الزمر','غافر','فصلت','الشورى','الزخرف','الدخان','الجاثية','الأحقاف','محمد','الفتح','الحجرات','ق','الذاريات','الطور','النجم','القمر','الرحمن','الواقعة','الحديد','المجادلة','الحشر','الممتحنة','الصف','الجمعة','المنافقون','التغابن','الطلاق','التحريم','الملك','القلم','الحاقة','المعارج','نوح','الجن','المزمل','المدثر','القيامة','الإنسان','المرسلات','النبأ','النازعات','عبس','التكوير','الإنفطار','المطففين','الإنشقاق','البروج','الطارق','الأعلى','الغاشية','الفجر','البلد','الشمس','الليل','الضحى','الشرح','التين','العلق','القدر','البينة','الزلزلة','العاديات','القارعة','التكاثر','العصر','الهمزة','الفيل','قريش','الماعون','الكوثر','الكافرون','النصر','المسد','الإخلاص','الفلق','الناس'
+    {name: 'الفاتحة', ayat: 7},
+    {name: 'البقرة', ayat: 286},
+    {name: 'آل عمران', ayat: 200},
+    {name: 'النساء', ayat: 176},
+    {name: 'المائدة', ayat: 120},
+    // يمكن إضافة كل سور القرآن هنا مع عدد الآيات
 ];
 
 const startDate = new Date('2026-01-01');
@@ -174,15 +184,34 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     });
 
     const quranCell = document.createElement('td');
+    const errorMsg = document.createElement('div');
+    errorMsg.classList.add('error-msg');
+    quranCell.appendChild(errorMsg);
+
     function addQuranEntry() {
+        // تحقق من إكمال الورد السابق
+        const lastEntry = quranCell.querySelector('.quran-entry:last-of-type');
+        if(lastEntry) {
+            const select = lastEntry.querySelector('select');
+            const from = lastEntry.querySelector('input:nth-of-type(1)');
+            const to = lastEntry.querySelector('input:nth-of-type(2)');
+            if(!select.value || !from.value || !to.value) {
+                errorMsg.textContent = 'اكمل الورد السابق أولاً!';
+                return;
+            } else {
+                errorMsg.textContent = '';
+            }
+        }
+
         const entryDiv = document.createElement('div');
         entryDiv.classList.add('quran-entry');
 
         const selectSurah = document.createElement('select');
         surahs.forEach(surah => {
             const option = document.createElement('option');
-            option.value = surah;
-            option.textContent = surah;
+            option.value = surah.name;
+            option.textContent = surah.name;
+            option.setAttribute('data-ayat', surah.ayat);
             selectSurah.appendChild(option);
         });
 
@@ -195,6 +224,13 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         toInput.type = 'number';
         toInput.min = 1;
         toInput.placeholder = 'إلى';
+
+        // تحديث الحد الأقصى للآية عند اختيار السورة
+        selectSurah.addEventListener('change', () => {
+            const max = parseInt(selectSurah.selectedOptions[0].dataset.ayat);
+            fromInput.max = max;
+            toInput.max = max;
+        });
 
         entryDiv.appendChild(selectSurah);
         entryDiv.appendChild(fromInput);
@@ -209,7 +245,7 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     addButton.addEventListener('click', addQuranEntry);
 
     quranCell.appendChild(addButton);
-    addQuranEntry();
+    addQuranEntry(); // أول ورد تلقائي
     aRow.appendChild(quranCell);
 
     azkarTbody.appendChild(aRow);
