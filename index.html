@@ -63,9 +63,16 @@ th {
     margin-bottom: 5px;
 }
 .quran-entry select, .quran-entry input {
-    padding: 4px;
+    padding: 6px;
     font-weight: bold;
     text-align: center;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+.quran-entry select:hover, .quran-entry input:hover {
+    border-color: #4caf50;
 }
 .add-quran {
     margin-top: 5px;
@@ -76,13 +83,24 @@ th {
     cursor: pointer;
     font-weight: bold;
 }
-.mark-read {
+.mark-read, .edit-quran {
     margin-left: 5px;
     padding: 2px 6px;
-    background-color: #4caf50;
-    color: #fff;
     font-weight: bold;
     cursor: pointer;
+    border-radius: 4px;
+}
+.mark-read {
+    background-color: #4caf50;
+    color: #fff;
+}
+.edit-quran {
+    background-color: #ff9800;
+    color: #fff;
+}
+.quran-entry.read input, .quran-entry.read select {
+    pointer-events: none;
+    opacity: 0.6;
 }
 .error-msg {
     color: #f44336;
@@ -125,11 +143,12 @@ th {
 
 <script>
 const surahs = [
-    {name: 'الفاتحة', ayat: 7},
-    {name: 'البقرة', ayat: 286},
-    {name: 'آل عمران', ayat: 200},
-    {name: 'النساء', ayat: 176},
-    {name: 'المائدة', ayat: 120},
+    {name: 'الفاتحة', ayat: 7}, {name: 'البقرة', ayat: 286}, {name: 'آل عمران', ayat: 200}, {name: 'النساء', ayat: 176}, {name: 'المائدة', ayat: 120},
+    {name: 'الأنعام', ayat: 165}, {name: 'الأعراف', ayat: 206}, {name: 'الأنفال', ayat: 75}, {name: 'التوبة', ayat: 129}, {name: 'يونس', ayat: 109},
+    {name: 'هود', ayat: 123}, {name: 'يوسف', ayat: 111}, {name: 'الرعد', ayat: 43}, {name: 'إبراهيم', ayat: 52}, {name: 'الحجر', ayat: 99},
+    {name: 'النحل', ayat: 128}, {name: 'الإسراء', ayat: 111}, {name: 'الكهف', ayat: 110}, {name: 'مريم', ayat: 98}, {name: 'طه', ayat: 135},
+    {name: 'الأنبياء', ayat: 112}, {name: 'الحج', ayat: 78}, {name: 'المؤمنون', ayat: 118}, {name: 'النور', ayat: 64}, {name: 'الفرقان', ayat: 77},
+    // يمكنك إضافة بقية السور بالعدد الفعلي للآيات هنا
 ];
 
 const startDate = new Date('2026-01-01');
@@ -140,7 +159,6 @@ const azkarTbody = document.querySelector('#azkarTable tbody');
 for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     const dateStr = d.toLocaleDateString('ar-EG');
 
-    // جدول الصلوات
     const pRow = document.createElement('tr');
     const dateCell = document.createElement('td');
     dateCell.textContent = dateStr;
@@ -173,10 +191,8 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     progressBar.appendChild(progressFill);
     progressCell.appendChild(progressBar);
     pRow.appendChild(progressCell);
-
     prayerTbody.appendChild(pRow);
 
-    // جدول الأذكار والورد
     const aRow = document.createElement('tr');
     const aDateCell = document.createElement('td');
     aDateCell.textContent = dateStr;
@@ -218,7 +234,7 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             const option = document.createElement('option');
             option.value = surah.name;
             option.textContent = surah.name;
-            option.setAttribute('data-ayat', surah.ayat);
+            option.dataset.ayat = surah.ayat;
             selectSurah.appendChild(option);
         });
 
@@ -236,16 +252,27 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             const max = parseInt(selectSurah.selectedOptions[0].dataset.ayat);
             fromInput.max = max;
             toInput.max = max;
+            if(parseInt(fromInput.value) > max) fromInput.value = max;
+            if(parseInt(toInput.value) > max) toInput.value = max;
         });
 
         const markBtn = document.createElement('div');
         markBtn.textContent = 'تم';
         markBtn.classList.add('mark-read');
+
+        const editBtn = document.createElement('div');
+        editBtn.textContent = 'تعديل';
+        editBtn.classList.add('edit-quran');
+
         markBtn.addEventListener('click', () => {
             if(fromInput.value && toInput.value) {
-                entryDiv.style.opacity = '0.6';
-                markBtn.textContent = '✓';
-                markBtn.style.backgroundColor = '#2196f3';
+                entryDiv.classList.add('read');
+            }
+        });
+
+        editBtn.addEventListener('click', () => {
+            if(entryDiv.classList.contains('read')) {
+                entryDiv.classList.remove('read');
             }
         });
 
@@ -253,6 +280,7 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         entryDiv.appendChild(fromInput);
         entryDiv.appendChild(toInput);
         entryDiv.appendChild(markBtn);
+        entryDiv.appendChild(editBtn);
 
         quranCell.insertBefore(entryDiv, addButton);
     }
