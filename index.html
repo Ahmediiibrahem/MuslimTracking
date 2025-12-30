@@ -224,7 +224,8 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     addButton.addEventListener('click', addQuranEntry);
 
     quranCell.appendChild(addButton);
-    addQuranEntry();
+// احذف السطر addQuranEntry(); لأنه بيخلي العناصر تظهر من البداية
+
     aRow.appendChild(quranCell);
     azkarTbody.appendChild(aRow);
 }
