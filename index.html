@@ -138,13 +138,9 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         cell.appendChild(box);
         pRow.appendChild(cell);
         boxes.push(box);
-
-        box.addEventListener('click', () => {
-            box.classList.toggle('checked');
-            updateProgress();
-        });
     });
 
+    // عمود الإنجاز
     const progressCell = document.createElement('td');
     const progressBar = document.createElement('div');
     progressBar.classList.add('progress-bar');
@@ -154,13 +150,17 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     progressCell.appendChild(progressBar);
     pRow.appendChild(progressCell);
 
-    function updateProgress() {
-        const checkedCount = boxes.filter(b => b.classList.contains('checked')).length;
-        const percent = Math.round((checkedCount / boxes.length) * 100);
-        progressFill.style.width = percent + '%';
-    }
-
     prayerTbody.appendChild(pRow);
+
+    // إضافة حدث لكل مربع داخل الصف
+    boxes.forEach(box => {
+        box.addEventListener('click', () => {
+            box.classList.toggle('checked');
+            const checkedCount = boxes.filter(b => b.classList.contains('checked')).length;
+            const percent = Math.round((checkedCount / boxes.length) * 100);
+            progressFill.style.width = percent + '%';
+        });
+    });
 
     // جدول الأذكار والورد
     const aRow = document.createElement('tr');
@@ -177,11 +177,12 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         box.addEventListener('click', () => box.classList.toggle('checked'));
     });
 
+    // الورد القرآني متعدد الأسطر
     const quranCell = document.createElement('td');
-
     function addQuranEntry() {
         const entryDiv = document.createElement('div');
         entryDiv.classList.add('quran-entry');
+
         const selectSurah = document.createElement('select');
         surahs.forEach(surah => {
             const option = document.createElement('option');
@@ -189,10 +190,12 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             option.textContent = surah;
             selectSurah.appendChild(option);
         });
+
         const fromInput = document.createElement('input');
         fromInput.type = 'number';
         fromInput.min = 1;
         fromInput.placeholder = 'من';
+
         const toInput = document.createElement('input');
         toInput.type = 'number';
         toInput.min = 1;
@@ -201,7 +204,8 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         entryDiv.appendChild(selectSurah);
         entryDiv.appendChild(fromInput);
         entryDiv.appendChild(toInput);
-        quranCell.appendChild(entryDiv);
+
+        quranCell.insertBefore(entryDiv, addButton);
     }
 
     const addButton = document.createElement('button');
@@ -209,8 +213,8 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     addButton.classList.add('add-quran');
     addButton.addEventListener('click', addQuranEntry);
 
-    addQuranEntry(); // إضافة أول ورد تلقائي
     quranCell.appendChild(addButton);
+    addQuranEntry(); // إضافة أول ورد تلقائي
     aRow.appendChild(quranCell);
 
     azkarTbody.appendChild(aRow);
