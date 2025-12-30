@@ -59,6 +59,7 @@ th {
 .quran-entry {
     display: flex;
     gap: 5px;
+    align-items: center;
     margin-bottom: 5px;
 }
 .quran-entry select, .quran-entry input {
@@ -74,6 +75,14 @@ th {
     color: #fff;
     cursor: pointer;
     font-weight: bold;
+}
+.mark-read {
+    margin-left: 5px;
+    padding: 2px 6px;
+    background-color: #4caf50;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
 }
 .error-msg {
     color: #f44336;
@@ -121,7 +130,6 @@ const surahs = [
     {name: 'آل عمران', ayat: 200},
     {name: 'النساء', ayat: 176},
     {name: 'المائدة', ayat: 120},
-    // يمكن إضافة كل سور القرآن هنا مع عدد الآيات
 ];
 
 const startDate = new Date('2026-01-01');
@@ -189,7 +197,6 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     quranCell.appendChild(errorMsg);
 
     function addQuranEntry() {
-        // تحقق من إكمال الورد السابق
         const lastEntry = quranCell.querySelector('.quran-entry:last-of-type');
         if(lastEntry) {
             const select = lastEntry.querySelector('select');
@@ -225,16 +232,27 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         toInput.min = 1;
         toInput.placeholder = 'إلى';
 
-        // تحديث الحد الأقصى للآية عند اختيار السورة
         selectSurah.addEventListener('change', () => {
             const max = parseInt(selectSurah.selectedOptions[0].dataset.ayat);
             fromInput.max = max;
             toInput.max = max;
         });
 
+        const markBtn = document.createElement('div');
+        markBtn.textContent = 'تم';
+        markBtn.classList.add('mark-read');
+        markBtn.addEventListener('click', () => {
+            if(fromInput.value && toInput.value) {
+                entryDiv.style.opacity = '0.6';
+                markBtn.textContent = '✓';
+                markBtn.style.backgroundColor = '#2196f3';
+            }
+        });
+
         entryDiv.appendChild(selectSurah);
         entryDiv.appendChild(fromInput);
         entryDiv.appendChild(toInput);
+        entryDiv.appendChild(markBtn);
 
         quranCell.insertBefore(entryDiv, addButton);
     }
@@ -245,7 +263,7 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
     addButton.addEventListener('click', addQuranEntry);
 
     quranCell.appendChild(addButton);
-    addQuranEntry(); // أول ورد تلقائي
+    addQuranEntry();
     aRow.appendChild(quranCell);
 
     azkarTbody.appendChild(aRow);
