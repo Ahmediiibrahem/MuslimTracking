@@ -242,6 +242,14 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         entryDiv.appendChild(markBtn);
         entryDiv.appendChild(editBtn);
 
+         const deleteBtn = document.createElement('div');
+deleteBtn.textContent = '×';
+deleteBtn.classList.add('delete-quran');
+deleteBtn.addEventListener('click', () => {
+    quranCell.removeChild(entryDiv);
+});
+entryDiv.appendChild(deleteBtn);
+
         
 
         quranCell.insertBefore(entryDiv, addButton);
@@ -259,13 +267,7 @@ for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
 
 }
 
-    const deleteBtn = document.createElement('div');
-deleteBtn.textContent = '×';
-deleteBtn.classList.add('delete-quran');
-deleteBtn.addEventListener('click', () => {
-    quranCell.removeChild(entryDiv);
-});
-entryDiv.appendChild(deleteBtn);
+   
 
 </script>
 
