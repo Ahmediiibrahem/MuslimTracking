@@ -5,34 +5,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prayer Tracker</title>
     <style>
-        body { font-family: Arial, sans-serif; direction: rtl; padding: 20px; background: #f4f4f4; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-        th { background-color: #e0e0e0; }
-        .prayer-box { display: flex; justify-content: center; gap: 5px; }
-        .box { width: 20px; height: 20px; border: 1px solid #333; cursor: pointer; }
-        .checked { background-color: #4caf50; }
-        .quran { background-color: #fff; padding: 10px; border: 1px solid #ccc; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            padding: 20px;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 12px;
+            text-align: center;
+        }
+        th {
+            background-color: #1f1f1f;
+        }
+        .prayer-box {
+            display: flex;
+            justify-content: center;
+        }
+        .box {
+            width: 20px;
+            height: 20px;
+            border: 1px solid #888;
+            cursor: pointer;
+        }
+        .checked {
+            background-color: #4caf50;
+        }
+        .quran {
+            padding: 10px;
+            border: 1px solid #444;
+            background-color: #1f1f1f;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
 
 <h1>متابعة الصلوات اليومية</h1>
-<div class="quran">
-    <h3>الورد القرآني</h3>
-    <p>سورة الفاتحة</p>
-</div>
-
 <table id="prayerTable">
     <thead>
         <tr>
             <th>اليوم</th>
             <th>الفجر</th>
             <th>الضحى</th>
+            <th>أذكار الصباح</th>
             <th>الظهر</th>
             <th>العصر</th>
+            <th>أذكار المساء</th>
             <th>المغرب</th>
             <th>العشاء</th>
+            <th>الورد القرآني</th>
         </tr>
     </thead>
     <tbody>
@@ -41,35 +70,29 @@
 </table>
 
 <script>
-    const days = 7; // ممكن تغيره حسب الأيام اللي تحب تظهر
     const tbody = document.querySelector('#prayerTable tbody');
+    const startDate = new Date('2026-01-01');
+    const endDate = new Date('2026-01-31');
 
-    for(let i=0; i<days; i++) {
+    for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
         const row = document.createElement('tr');
         const dateCell = document.createElement('td');
-        const today = new Date();
-        today.setDate(today.getDate() + i);
-        dateCell.textContent = today.toLocaleDateString('ar-EG');
+        dateCell.textContent = d.toLocaleDateString('ar-EG');
         row.appendChild(dateCell);
 
-        const prayers = ['الفجر','الضحى','الظهر','العصر','المغرب','العشاء'];
+        const columns = ['الفجر','الضحى','أذكار الصباح','الظهر','العصر','أذكار المساء','المغرب','العشاء','الورد القرآني'];
 
-        prayers.forEach(() => {
+        columns.forEach(() => {
             const cell = document.createElement('td');
             const boxDiv = document.createElement('div');
             boxDiv.classList.add('prayer-box');
-            const fard = document.createElement('div');
-            fard.classList.add('box');
-            const nafilah = document.createElement('div');
-            nafilah.classList.add('box');
-            boxDiv.appendChild(fard);
-            boxDiv.appendChild(nafilah);
+            const box = document.createElement('div');
+            box.classList.add('box');
+            boxDiv.appendChild(box);
             cell.appendChild(boxDiv);
             row.appendChild(cell);
 
-            // حدث عند الضغط
-            fard.addEventListener('click', () => fard.classList.toggle('checked'));
-            nafilah.addEventListener('click', () => nafilah.classList.toggle('checked'));
+            box.addEventListener('click', () => box.classList.toggle('checked'));
         });
 
         tbody.appendChild(row);
