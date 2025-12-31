@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الأذكار والورد</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    font-family: 'Cairo', sans-serif;
+    background: #121212;
+    color: #e0e0e0;
+    padding: 20px;
+    direction: rtl;
+}
+
+h2 { text-align: center; }
+
+input[type="date"] {
+    padding: 8px;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 15px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: center;
+}
+
+th { background: #1f1f1f; }
+
+.box {
+    width: 26px;
+    height: 26px;
+    border: 1px solid #888;
+    cursor: pointer;
+    margin: auto;
+}
+
+.checked::after {
+    content: "✔";
+    color: #4caf50;
+}
+
+.quran-entry {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 6px;
+}
+
+.quran-entry select,
+.quran-entry input {
+    padding: 6px;
+    border-radius: 4px;
+    background: #1e1e1e;
+    border: 1px solid #555;
+    color: #fff;
+    width: 90px;
+}
+
+.add-quran { background:#4caf50; border:none; padding:6px 10px; color:#fff; }
+.mark-read { background:#4caf50; color:#fff; padding:6px; }
+.edit-quran { background:#ff9800; color:#fff; padding:6px; }
+.delete-quran { background:#f44336; color:#fff; padding:6px; }
+
+.quran-entry.read select,
+.quran-entry.read input {
+    opacity: .6;
+    pointer-events: none;
+}
+
+.error-msg {
+    color: #f44336;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>الأذكار والورد اليومي</h2>
+
+<input type="date" id="dayPicker">
+
+<table>
+<thead>
+<tr>
+<th>اليوم</th>
+<th>أذكار الصباح</th>
+<th>أذكار المساء</th>
+<th>الورد القرآني</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+
+<script>
+/* نفس كود الورد اللي اشتغلنا عليه سابقاً — جاهز ومختصر */
+const surahs = [
+{ name:'الفاتحة', ayat:7 },{ name:'البقرة', ayat:286 },{ name:'آل عمران', ayat:200 },
+{ name:'النساء', ayat:176 },{ name:'المائدة', ayat:120 },{ name:'الأنعام', ayat:165 },
+{ name:'الأعراف', ayat:206 },{ name:'الأنفال', ayat:75 },{ name:'التوبة', ayat:129 },
+{ name:'يونس', ayat:109 },{ name:'هود', ayat:123 },{ name:'يوسف', ayat:111 },
+{ name:'الرعد', ayat:43 },{ name:'إبراهيم', ayat:52 },{ name:'الحجر', ayat:99 },
+{ name:'النحل', ayat:128 },{ name:'الإسراء', ayat:111 },{ name:'الكهف', ayat:110 },
+{ name:'مريم', ayat:98 },{ name:'طه', ayat:135 },{ name:'الأنبياء', ayat:112 },
+{ name:'الحج', ayat:78 },{ name:'المؤمنون', ayat:118 },{ name:'النور', ayat:64 },
+{ name:'الفرقان', ayat:77 },{ name:'الشعراء', ayat:227 },{ name:'النمل', ayat:93 },
+{ name:'القصص', ayat:88 },{ name:'العنكبوت', ayat:69 },{ name:'الروم', ayat:60 },
+{ name:'لقمان', ayat:34 },{ name:'السجدة', ayat:30 },{ name:'الأحزاب', ayat:73 },
+{ name:'سبأ', ayat:54 },{ name:'فاطر', ayat:45 },{ name:'يس', ayat:83 },
+{ name:'الصافات', ayat:182 },{ name:'ص', ayat:88 },{ name:'الزمر', ayat:75 },
+{ name:'غافر', ayat:85 },{ name:'فصلت', ayat:54 },{ name:'الشورى', ayat:53 },
+{ name:'الزخرف', ayat:89 },{ name:'الدخان', ayat:59 },{ name:'الجاثية', ayat:37 },
+{ name:'الأحقاف', ayat:35 },{ name:'محمد', ayat:38 },{ name:'الفتح', ayat:29 },
+{ name:'الحجرات', ayat:18 },{ name:'ق', ayat:45 },{ name:'الذاريات', ayat:60 },
+{ name:'الطور', ayat:49 },{ name:'النجم', ayat:62 },{ name:'القمر', ayat:55 },
+{ name:'الرحمن', ayat:78 },{ name:'الواقعة', ayat:96 },{ name:'الحديد', ayat:29 },
+{ name:'المجادلة', ayat:22 },{ name:'الحشر', ayat:24 },{ name:'الممتحنة', ayat:13 },
+{ name:'الصف', ayat:14 },{ name:'الجمعة', ayat:11 },{ name:'المنافقون', ayat:11 },
+{ name:'التغابن', ayat:18 },{ name:'الطلاق', ayat:12 },{ name:'التحريم', ayat:12 },
+{ name:'الملك', ayat:30 },{ name:'القلم', ayat:52 },{ name:'الحاقة', ayat:52 },
+{ name:'المعارج', ayat:44 },{ name:'نوح', ayat:28 },{ name:'الجن', ayat:28 },
+{ name:'المزمل', ayat:20 },{ name:'المدثر', ayat:56 },{ name:'القيامة', ayat:40 },
+{ name:'الانسان', ayat:31 },{ name:'المرسلات', ayat:50 },{ name:'النبأ', ayat:40 },
+{ name:'النازعات', ayat:46 },{ name:'عبس', ayat:42 },{ name:'التكوير', ayat:29 },
+{ name:'الانفطار', ayat:19 },{ name:'المطففين', ayat:36 },{ name:'الانشقاق', ayat:25 },
+{ name:'البروج', ayat:22 },{ name:'الطارق', ayat:17 },{ name:'الأعلى', ayat:19 },
+{ name:'الغاشية', ayat:26 },{ name:'الفجر', ayat:30 },{ name:'البلد', ayat:20 },
+{ name:'الشمس', ayat:15 },{ name:'الليل', ayat:21 },{ name:'الضحى', ayat:11 },
+{ name:'الشرح', ayat:8 },{ name:'التين', ayat:8 },{ name:'العلق', ayat:19 },
+{ name:'القدر', ayat:5 },{ name:'البينة', ayat:8 },{ name:'الزلزلة', ayat:8 },
+{ name:'العاديات', ayat:11 },{ name:'القارعة', ayat:11 },{ name:'التكاثر', ayat:8 },
+{ name:'العصر', ayat:3 },{ name:'الهمزة', ayat:9 },{ name:'الفيل', ayat:5 },
+{ name:'قريش', ayat:4 },{ name:'الماعون', ayat:7 },{ name:'الكوثر', ayat:3 },
+{ name:'الكافرون', ayat:6 },{ name:'النصر', ayat:3 },{ name:'المسد', ayat:5 },
+{ name:'الإخلاص', ayat:4 },{ name:'الفلق', ayat:5 },{ name:'الناس', ayat:6 }
+];
+
+const picker = document.getElementById("dayPicker");
+const tbody = document.getElementById("tbody");
+
+picker.addEventListener("change", () => {
+    tbody.innerHTML = "";
+    createRow(picker.value);
+});
+
+function createRow(dateVal) {
+    if (!dateVal) return;
+
+    const tr = document.createElement("tr");
+    const tdDate = document.createElement("td");
+    tdDate.textContent = new Date(dateVal).toLocaleDateString("ar-EG");
+    tr.appendChild(tdDate);
+
+    ["صباح","مساء"].forEach(() => {
+        const td = document.createElement("td");
+        const box = document.createElement("div");
+        box.className = "box";
+        box.onclick = () => box.classList.toggle("checked");
+        td.appendChild(box);
+        tr.appendChild(td);
+    });
+
+    const quranTd = document.createElement("td");
+    const error = document.createElement("div");
+    error.className = "error-msg";
+    quranTd.appendChild(error);
+
+    const addBtn = document.createElement("button");
+    addBtn.className = "add-quran";
+    addBtn.textContent = "+ إضافة ورد";
+
+    addBtn.onclick = () => addQuran(quranTd, error);
+
+    quranTd.appendChild(addBtn);
+    tr.appendChild(quranTd);
+
+    tbody.appendChild(tr);
+}
+
+function addQuran(container, error) {
+    const last = container.querySelector(".quran-entry:last-of-type");
+    if (last) {
+        const inputs = last.querySelectorAll("input");
+        if ([...inputs].some(i => !i.value)) {
+            error.textContent = "اكمل الورد السابق أولاً";
+            return;
+        }
+    }
+
+    error.textContent = "";
+
+    const div = document.createElement("div");
+    div.className = "quran-entry";
+
+    const select = document.createElement("select");
+    surahs.forEach(s => {
+        const o = document.createElement("option");
+        o.value = s.name;
+        o.textContent = s.name;
+        o.dataset.max = s.ayat;
+        select.appendChild(o);
+    });
+
+    const from = document.createElement("input");
+    from.placeholder = "من";
+    from.type = "number";
+
+    const to = document.createElement("input");
+    to.placeholder = "إلى";
+    to.type = "number";
+
+    select.onchange = () => {
+        const max = select.selectedOptions[0].dataset.max;
+        from.max = max;
+        to.max = max;
+    };
+
+    const done = document.createElement("button");
+    done.className = "mark-read";
+    done.textContent = "تم";
+
+    const edit = document.createElement("button");
+    edit.className = "edit-quran";
+    edit.textContent = "تعديل";
+
+    const del = document.createElement("button");
+    del.className = "delete-quran";
+    del.textContent = "×";
+
+    done.onclick = () => {
+        const max = +select.selectedOptions[0].dataset.max;
+        if (+from.value > max || +to.value > max) {
+            error.textContent = `الحد الأقصى لهذه السورة هو ${max}`;
+            return;
+        }
+        if (from.value && to.value) {
+            div.classList.add("read");
+            error.textContent = "";
+        }
+    };
+
+    edit.onclick = () => div.classList.remove("read");
+    del.onclick = () => div.remove();
+
+    div.append(select, from, to, done, edit, del);
+    container.insertBefore(div, container.lastElementChild);
+}
+</script>
+
+</body>
+</html>
