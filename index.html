@@ -12,15 +12,34 @@ body {
     direction: rtl;
     background-color: #121212;
     color: #e0e0e0;
-    padding: 20px;
+    margin: 0;
+    padding: 0;
 }
-table { width: 100%; max-width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; display: block; overflow-x: auto; }
-th, td { border: 1px solid #444; padding: 12px; text-align: center; vertical-align: middle; word-wrap: break-word; }
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #444;
+    margin-bottom: 10px;
+    background-color: #1f1f1f;
+}
+.tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    color: #e0e0e0;
+    border-right: 1px solid #444;
+}
+.tab:last-child { border-right: none; }
+.tab.active { background-color: #4caf50; color: #fff; }
+.tab-content { display: none; padding: 10px; }
+.tab-content.active { display: block; }
+
+table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; display: block; overflow-x: auto; }
+th, td { border: 1px solid #444; padding: 10px; text-align: center; vertical-align: middle; word-wrap: break-word; }
 th { background-color: #1f1f1f; }
 .box { width: 24px; height: 24px; border: 1px solid #888; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 18px; margin: 0 auto; }
 .checked::after { content: '✔'; color: #4caf50; }
-.progress-bar { width: 100%; height: 24px; background-color: #333; border-radius: 4px; overflow: hidden; position: relative; }
-.progress-fill { height: 100%; width: 0%; background-color: #4caf50; transition: width 0.3s; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: bold; }
+.progress-bar { width: 100%; height: 20px; background-color: #333; border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; width: 0%; background-color: #4caf50; transition: width 0.3s; text-align: center; line-height: 20px; color: #fff; font-weight: bold; }
+
 .quran-entry { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; margin-bottom: 5px; }
 .quran-entry select, .quran-entry input { padding: 6px; font-weight: bold; text-align: center; border-radius: 4px; border: 1px solid #555; background-color: #1e1e1e; color: #e0e0e0; width: 80px; min-width: 60px; box-sizing: border-box; }
 .quran-entry select:hover, .quran-entry input:hover { border-color: #4caf50; }
@@ -31,187 +50,187 @@ th { background-color: #1f1f1f; }
 .delete-quran { background-color: #f44336; color: #fff; }
 .quran-entry.read input, .quran-entry.read select { pointer-events: none; opacity: 0.6; background-color: #2e2e2e; }
 .error-msg { color: #f44336; font-weight: bold; margin-top: 5px; }
-select, button { font-weight: bold; font-family: 'Cairo', sans-serif; }
-.date-select { margin-bottom: 10px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.date-select select { width: 100px; padding: 5px; border-radius: 4px; border: 1px solid #555; background-color: #1e1e1e; color: #e0e0e0; }
-.date-select button { padding: 5px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-.add-day { background-color: #4caf50; color: #fff; }
-.delete-day { background-color: #f44336; color: #fff; }
 </style>
 </head>
 <body>
 
-<h2>اختيار اليوم</h2>
-<div class="date-select">
-    <select id="yearSelect"></select>
-    <select id="monthSelect"></select>
-    <select id="daySelect"></select>
-    <button class="add-day">إضافة اليوم</button>
-    <button class="delete-day">حذف اليوم</button>
+<div class="tabs">
+    <div class="tab active" data-tab="prayersTab">الصلوات اليومية</div>
+    <div class="tab" data-tab="azkarTab">الأذكار والورد القرآني</div>
 </div>
 
-<h2>جدول الصلوات</h2>
-<table id="prayerTable">
-<thead>
-<tr>
-<th>اليوم</th>
-<th>الفجر</th>
-<th>الضحى</th>
-<th>الظهر</th>
-<th>العصر</th>
-<th>المغرب</th>
-<th>العشاء</th>
-<th>الإنجاز</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
+<div id="prayersTab" class="tab-content active">
+    <h2>جدول الصلوات</h2>
+    <table id="prayerTable">
+    <thead>
+        <tr>
+            <th>اليوم</th>
+            <th>الفجر</th>
+            <th>الضحى</th>
+            <th>الظهر</th>
+            <th>العصر</th>
+            <th>المغرب</th>
+            <th>العشاء</th>
+            <th>الإنجاز</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
+</div>
 
-<h2>جدول الأذكار والورد القرآني</h2>
-<table id="azkarTable">
-<thead>
-<tr>
-<th>اليوم</th>
-<th>أذكار الصباح</th>
-<th>أذكار المساء</th>
-<th>الورد القرآني</th>
-</tr>
-</thead>
-<tbody></tbody>
-</table>
+<div id="azkarTab" class="tab-content">
+    <h2>جدول الأذكار والورد القرآني</h2>
+    <table id="azkarTable">
+    <thead>
+        <tr>
+            <th>اليوم</th>
+            <th>أذكار الصباح</th>
+            <th>أذكار المساء</th>
+            <th>الورد القرآني</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+    </table>
+</div>
 
 <script>
+// ---- Tabs logic ----
+const tabs = document.querySelectorAll('.tab');
+tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+});
+
+// ---- Prayer Table ----
+const startDate = new Date('2026-01-01');
+const endDate = new Date('2026-01-31');
 const prayerTbody = document.querySelector('#prayerTable tbody');
 const azkarTbody = document.querySelector('#azkarTable tbody');
 
-const years = [2026];
-const months = Array.from({length:12},(_,i)=>i+1);
-const days = Array.from({length:31},(_,i)=>i+1);
-
-const yearSelect = document.getElementById('yearSelect');
-const monthSelect = document.getElementById('monthSelect');
-const daySelect = document.getElementById('daySelect');
-
-years.forEach(y=>{ let o=document.createElement('option'); o.value=y;o.textContent=y;yearSelect.appendChild(o)});
-months.forEach(m=>{ let o=document.createElement('option'); o.value=m;o.textContent=m;monthSelect.appendChild(o)});
-days.forEach(d=>{ let o=document.createElement('option'); o.value=d;o.textContent=d;daySelect.appendChild(o)});
-
-const addDayBtn = document.querySelector('.add-day');
-const deleteDayBtn = document.querySelector('.delete-day');
-
-let daysData = [];
-
-function renderDay(dateStr){
-    // جدول الصلوات
-    const pRow = document.createElement('tr');
-    const dateCell = document.createElement('td'); dateCell.textContent=dateStr; pRow.appendChild(dateCell);
-    const prayers = ['الفجر','الضحى','الظهر','العصر','المغرب','العشاء'];
-    const boxes = [];
-    prayers.forEach(()=>{
-        const cell=document.createElement('td');
-        const box=document.createElement('div'); box.classList.add('box');
-        cell.appendChild(box); pRow.appendChild(cell); boxes.push(box);
-        box.addEventListener('click', ()=>{
-            box.classList.toggle('checked');
-            const checkedCount = boxes.filter(b=>b.classList.contains('checked')).length;
-            const progress = checkedCount===6?'اكتمل':Math.round((checkedCount/6)*100)+'%';
-            progressFill.textContent = progress;
-        });
-    });
-    const progressCell = document.createElement('td');
-    const progressBar = document.createElement('div'); progressBar.classList.add('progress-bar');
-    const progressFill = document.createElement('div'); progressFill.classList.add('progress-fill'); progressBar.appendChild(progressFill); progressCell.appendChild(progressBar);
-    pRow.appendChild(progressCell);
-    prayerTbody.appendChild(pRow);
-
-    // جدول الأذكار والورد
-    const aRow=document.createElement('tr');
-    const aDateCell=document.createElement('td'); aDateCell.textContent=dateStr; aRow.appendChild(aDateCell);
-    ['أذكار الصباح','أذكار المساء'].forEach(()=>{
-        const cell=document.createElement('td'); const box=document.createElement('div'); box.classList.add('box'); cell.appendChild(box); aRow.appendChild(cell);
-        box.addEventListener('click', ()=>box.classList.toggle('checked'));
-    });
-    const quranCell=document.createElement('td'); aRow.appendChild(quranCell);
-    const addBtn=document.createElement('button'); addBtn.textContent='+ إضافة ورد'; addBtn.classList.add('add-quran');
-    quranCell.appendChild(addBtn);
-    addBtn.addEventListener('click',()=>{
-        const entry=document.createElement('div'); entry.classList.add('quran-entry');
-        const surahs = [
-  {name: 'الفاتحة', ayat: 7}, {name: 'البقرة', ayat: 286}, {name: 'آل عمران', ayat: 200},
-  {name: 'النساء', ayat: 176}, {name: 'المائدة', ayat: 120}, {name: 'الأنعام', ayat: 165},
-  {name: 'الأعراف', ayat: 206}, {name: 'الأنفال', ayat: 75}, {name: 'التوبة', ayat: 129},
-  {name: 'يونس', ayat: 109}, {name: 'هود', ayat: 123}, {name: 'يوسف', ayat: 111},
-  {name: 'الرعد', ayat: 43}, {name: 'إبراهيم', ayat: 52}, {name: 'الحجر', ayat: 99},
-  {name: 'النحل', ayat: 128}, {name: 'الإسراء', ayat: 111}, {name: 'الكهف', ayat: 110},
-  {name: 'مريم', ayat: 98}, {name: 'طه', ayat: 135}, {name: 'الأنبياء', ayat: 112},
-  {name: 'الحج', ayat: 78}, {name: 'المؤمنون', ayat: 118}, {name: 'النور', ayat: 64},
-  {name: 'الفرقان', ayat: 77}, {name: 'الشعراء', ayat: 227}, {name: 'النمل', ayat: 93},
-  {name: 'القصص', ayat: 88}, {name: 'العنكبوت', ayat: 69}, {name: 'الروم', ayat: 60},
-  {name: 'لقمان', ayat: 34}, {name: 'السجدة', ayat: 30}, {name: 'الأحزاب', ayat: 73},
-  {name: 'سبأ', ayat: 54}, {name: 'فاطر', ayat: 45}, {name: 'يس', ayat: 83},
-  {name: 'الصافات', ayat: 182}, {name: 'ص', ayat: 88}, {name: 'الزمر', ayat: 75},
-  {name: 'غافر', ayat: 85}, {name: 'فصلت', ayat: 54}, {name: 'الشورى', ayat: 53},
-  {name: 'الزخرف', ayat: 89}, {name: 'الدخان', ayat: 59}, {name: 'الجاثية', ayat: 37},
-  {name: 'الأحقاف', ayat: 35}, {name: 'محمد', ayat: 38}, {name: 'الفتح', ayat: 29},
-  {name: 'الحجرات', ayat: 18}, {name: 'ق', ayat: 45}, {name: 'الذاريات', ayat: 60},
-  {name: 'الطور', ayat: 49}, {name: 'النجم', ayat: 62}, {name: 'القمر', ayat: 55},
-  {name: 'الرحمن', ayat: 78}, {name: 'الواقعة', ayat: 96}, {name: 'الحديد', ayat: 29},
-  {name: 'المجادلة', ayat: 22}, {name: 'الحشر', ayat: 24}, {name: 'الممتحنة', ayat: 13},
-  {name: 'الصف', ayat: 14}, {name: 'الجمعة', ayat: 11}, {name: 'المنافقون', ayat: 11},
-  {name: 'التغابن', ayat: 18}, {name: 'الطلاق', ayat: 12}, {name: 'التحريم', ayat: 12},
-  {name: 'الملك', ayat: 30}, {name: 'القلم', ayat: 52}, {name: 'الحاقة', ayat: 52},
-  {name: 'المعارج', ayat: 44}, {name: 'نوح', ayat: 28}, {name: 'الجن', ayat: 28},
-  {name: 'المزمل', ayat: 20}, {name: 'المدثر', ayat: 56}, {name: 'القيامة', ayat: 40},
-  {name: 'الانسان', ayat: 31}, {name: 'المرسلات', ayat: 50}, {name: 'النبأ', ayat: 40},
-  {name: 'النازعات', ayat: 46}, {name: 'عبس', ayat: 42}, {name: 'التكوير', ayat: 29},
-  {name: 'الانفطار', ayat: 19}, {name: 'المطففين', ayat: 36}, {name: 'الانشقاق', ayat: 25},
-  {name: 'البروج', ayat: 22}, {name: 'الطارق', ayat: 17}, {name: 'الأعلى', ayat: 19},
-  {name: 'الغاشية', ayat: 26}, {name: 'الفجر', ayat: 30}, {name: 'البلد', ayat: 20},
-  {name: 'الشمس', ayat: 15}, {name: 'الليل', ayat: 21}, {name: 'الضحى', ayat: 11},
-  {name: 'الشرح', ayat: 8}, {name: 'التين', ayat: 8}, {name: 'العلق', ayat: 19},
-  {name: 'القدر', ayat: 5}, {name: 'البينة', ayat: 8}, {name: 'الزلزلة', ayat: 8},
-  {name: 'العاديات', ayat: 11}, {name: 'القارعة', ayat: 11}, {name: 'التكاثر', ayat: 8},
-  {name: 'العصر', ayat: 3}, {name: 'الهمزة', ayat: 9}, {name: 'الفيل', ayat: 5},
-  {name: 'قريش', ayat: 4}, {name: 'الماعون', ayat: 7}, {name: 'الكوثر', ayat: 3},
-  {name: 'الكافرون', ayat: 6}, {name: 'النصر', ayat: 3}, {name: 'المسد', ayat: 5},
-  {name: 'الإخلاص', ayat: 4}, {name: 'الفلق', ayat: 5}, {name: 'الناس', ayat: 6}
-];
-        const select=document.createElement('select'); surahs.forEach(s=>{ const o=document.createElement('option'); o.value=s.name; o.textContent=s.name; o.dataset.ayat=s.ayat; select.appendChild(o); });
-        const from=document.createElement('input'); from.type='number'; from.min=1; from.placeholder='من';
-        const to=document.createElement('input'); to.type='number'; to.min=1; to.placeholder='إلى';
-        select.addEventListener('change',()=>{ const max=parseInt(select.selectedOptions[0].dataset.ayat); from.max=max; to.max=max; if(from.value>max) from.value=max; if(to.value>max) to.value=max; });
-        const mark=document.createElement('div'); mark.textContent='تم'; mark.classList.add('mark-read');
-        const edit=document.createElement('div'); edit.textContent='تعديل'; edit.classList.add('edit-quran');
-        const del=document.createElement('div'); del.textContent='×'; del.classList.add('delete-quran');
-        mark.addEventListener('click',()=>{
-            const max=parseInt(select.selectedOptions[0].dataset.ayat);
-            if(from.value>max||to.value>max){ alert(`الحد الأقصى لآيات هذه السورة هو ${max}`); return; }
-            entry.classList.add('read');
-        });
-        edit.addEventListener('click',()=>{ entry.classList.remove('read'); });
-        del.addEventListener('click',()=>{ quranCell.removeChild(entry); });
-        entry.appendChild(select); entry.appendChild(from); entry.appendChild(to); entry.appendChild(mark); entry.appendChild(edit); entry.appendChild(del);
-        quranCell.insertBefore(entry, addBtn);
-    });
-
-    azkarTbody.appendChild(aRow);
+function formatDate(d) {
+    return d.toLocaleDateString('ar-EG');
 }
 
-addDayBtn.addEventListener('click',()=>{
-    const y=yearSelect.value, m=monthSelect.value, d=daySelect.value;
-    const dateStr=`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-    if(daysData.includes(dateStr)){ alert('اليوم مضاف مسبقاً'); return; }
-    daysData.push(dateStr);
-    renderDay(dateStr);
-});
+for(let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+    const dateStr = formatDate(d);
 
-deleteDayBtn.addEventListener('click',()=>{
-    const y=yearSelect.value, m=monthSelect.value, d=daySelect.value;
-    const dateStr=`${y}-${m.padStart(2,'0')}-${d.padStart(2,'0')}`;
-    daysData=daysData.filter(x=>x!==dateStr);
-    [...prayerTbody.children].forEach(tr=>{ if(tr.children[0].textContent===dateStr) prayerTbody.removeChild(tr); });
-    [...azkarTbody.children].forEach(tr=>{ if(tr.children[0].textContent===dateStr) azkarTbody.removeChild(tr); });
-});
+    // --- الصلوات ---
+    const pRow = document.createElement('tr');
+    const dateCell = document.createElement('td'); dateCell.textContent = dateStr; pRow.appendChild(dateCell);
+
+    const prayers = ['الفجر','الضحى','الظهر','العصر','المغرب','العشاء'];
+    const boxes = [];
+
+    prayers.forEach(() => {
+        const cell = document.createElement('td');
+        const box = document.createElement('div'); box.classList.add('box');
+        cell.appendChild(box); pRow.appendChild(cell); boxes.push(box);
+        box.addEventListener('click', () => {
+            box.classList.toggle('checked');
+            const checkedCount = boxes.filter(b => b.classList.contains('checked')).length;
+            const percent = Math.round((checkedCount / boxes.length) * 100);
+            progressFill.style.width = percent + '%';
+            progressFill.textContent = (percent === 100) ? 'اكتمل' : percent + '%';
+            localStorage.setItem('prayer-'+dateStr, JSON.stringify(boxes.map(b => b.classList.contains('checked'))));
+        });
+    });
+
+    const progressCell = document.createElement('td');
+    const progressBar = document.createElement('div'); progressBar.classList.add('progress-bar');
+    const progressFill = document.createElement('div'); progressFill.classList.add('progress-fill');
+    progressBar.appendChild(progressFill); progressCell.appendChild(progressBar); pRow.appendChild(progressCell);
+
+    // Restore progress if exists
+    const saved = localStorage.getItem('prayer-'+dateStr);
+    if(saved) {
+        const arr = JSON.parse(saved);
+        arr.forEach((v,i) => { if(v) boxes[i].classList.add('checked'); });
+        const percent = Math.round(arr.filter(Boolean).length / boxes.length * 100);
+        progressFill.style.width = percent + '%';
+        progressFill.textContent = (percent === 100) ? 'اكتمل' : percent + '%';
+    }
+
+    prayerTbody.appendChild(pRow);
+
+    // --- الأذكار والورد ---
+    const aRow = document.createElement('tr');
+    const aDateCell = document.createElement('td'); aDateCell.textContent = dateStr; aRow.appendChild(aDateCell);
+
+    ['أذكار الصباح','أذكار المساء'].forEach(key => {
+        const cell = document.createElement('td');
+        const box = document.createElement('div'); box.classList.add('box');
+        cell.appendChild(box); aRow.appendChild(cell);
+        box.addEventListener('click', () => {
+            box.classList.toggle('checked');
+            localStorage.setItem(key+'-'+dateStr, box.classList.contains('checked'));
+        });
+        // Restore
+        const savedBox = localStorage.getItem(key+'-'+dateStr);
+        if(savedBox === 'true') box.classList.add('checked');
+    });
+
+    const quranCell = document.createElement('td');
+    const errorMsg = document.createElement('div'); errorMsg.classList.add('error-msg');
+    quranCell.appendChild(errorMsg);
+
+    const addButton = document.createElement('button');
+    addButton.textContent = '+ إضافة ورد';
+    addButton.classList.add('add-quran');
+
+    addButton.addEventListener('click', () => {
+        const entryDiv = document.createElement('div'); entryDiv.classList.add('quran-entry');
+
+        const selectSurah = document.createElement('select');
+        surahs.forEach(surah => {
+            const option = document.createElement('option');
+            option.value = surah.name;
+            option.textContent = surah.name;
+            option.dataset.ayat = surah.ayat;
+            selectSurah.appendChild(option);
+        });
+
+        const fromInput = document.createElement('input'); fromInput.type='number'; fromInput.placeholder='من'; fromInput.min=1;
+        const toInput = document.createElement('input'); toInput.type='number'; toInput.placeholder='إلى'; toInput.min=1;
+
+        selectSurah.addEventListener('change', () => {
+            const max = parseInt(selectSurah.selectedOptions[0].dataset.ayat);
+            fromInput.max = max; toInput.max = max;
+            if(parseInt(fromInput.value) > max) fromInput.value = max;
+            if(parseInt(toInput.value) > max) toInput.value = max;
+        });
+
+        const markBtn = document.createElement('div'); markBtn.textContent='تم'; markBtn.classList.add('mark-read');
+        const editBtn = document.createElement('div'); editBtn.textContent='تعديل'; editBtn.classList.add('edit-quran');
+        const deleteBtn = document.createElement('div'); deleteBtn.textContent='×'; deleteBtn.classList.add('delete-quran');
+
+        markBtn.addEventListener('click', () => {
+            const max = parseInt(selectSurah.selectedOptions[0].dataset.ayat);
+            if(fromInput.value>max || toInput.value>max){ errorMsg.textContent=`الحد الأقصى لآيات هذه السورة هو ${max}`; return; }
+            entryDiv.classList.add('read'); errorMsg.textContent='';
+            localStorage.setItem('quran-'+dateStr, quranCell.innerHTML);
+        });
+
+        editBtn.addEventListener('click', () => { entryDiv.classList.remove('read'); });
+        deleteBtn.addEventListener('click', ()=>{ entryDiv.remove(); localStorage.setItem('quran-'+dateStr, quranCell.innerHTML); });
+
+        entryDiv.appendChild(selectSurah); entryDiv.appendChild(fromInput); entryDiv.appendChild(toInput);
+        entryDiv.appendChild(markBtn); entryDiv.appendChild(editBtn); entryDiv.appendChild(deleteBtn);
+
+        quranCell.insertBefore(entryDiv, addButton);
+    });
+
+    quranCell.appendChild(addButton);
+    aRow.appendChild(quranCell);
+    azkarTbody.appendChild(aRow);
+
+    // Restore Quran entries
+    const savedQuran = localStorage.getItem('quran-'+dateStr);
+    if(savedQuran) quranCell.innerHTML = savedQuran + ''; 
+}
 </script>
 
 </body>
