@@ -9,71 +9,84 @@
 <style>
 body {
     font-family: 'Cairo', sans-serif;
-    background: #121212;
-    color: #e0e0e0;
-    padding: 20px;
-    direction: rtl;
+    background:#121212;
+    color:#eee;
+    padding:20px;
 }
 
-h2 { text-align: center; }
+.date-box {
+    max-width: 260px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
 
-input[type="date"] {
-    padding: 8px;
-    width: 100%;
-    max-width: 300px;
-    margin-bottom: 15px;
+.date-box label {
+    color:#aaa;
+}
+
+.date-box input {
+    padding: 10px;
+    border-radius: 8px;
+    border:1px solid #444;
+    background:#1f1f1f;
+    color:#fff;
 }
 
 table {
-    width: 100%;
+    width:100%;
     border-collapse: collapse;
+    margin-top:20px;
 }
 
 th, td {
-    border: 1px solid #444;
-    padding: 10px;
-    text-align: center;
+    border:1px solid #444;
+    padding:10px;
+    text-align:center;
 }
 
-th { background: #1f1f1f; }
+th {
+    background:#1f1f1f;
+}
 
 .box {
-    width: 26px;
-    height: 26px;
-    border: 1px solid #888;
-    margin: auto;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width:26px;
+    height:26px;
+    border:1px solid #777;
+    margin:auto;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 }
 
 .checked::after {
-    content: "✔";
-    color: #4caf50;
+    content:"✔";
+    color:#4caf50;
 }
 
 .progress-bar {
-    width: 100%;
-    height: 18px;
-    background: #333;
-    border-radius: 4px;
-    overflow: hidden;
+    background:#333;
+    border-radius:5px;
+    height:18px;
+    overflow:hidden;
 }
 
 .progress-fill {
-    height: 100%;
-    width: 0%;
-    background: #4caf50;
+    height:100%;
+    width:0%;
+    background:#4caf50;
+    transition:0.3s;
 }
 </style>
 </head>
-
 <body>
 
-<h2>متابعة الصلوات</h2>
-
-<input type="date" id="dayPicker">
+<div class="date-box">
+    <label>📅 اختر اليوم</label>
+    <input type="date" id="dayPicker">
+</div>
 
 <table>
 <thead>
@@ -95,36 +108,48 @@ th { background: #1f1f1f; }
 const picker = document.getElementById("dayPicker");
 const tbody = document.getElementById("tbody");
 
+function savePrayers(date, data) {
+    localStorage.setItem("prayers_" + date, JSON.stringify(data));
+}
+
+function loadPrayers(date) {
+    return JSON.parse(localStorage.getItem("prayers_" + date));
+}
+
 picker.addEventListener("change", () => {
     tbody.innerHTML = "";
+    if (!picker.value) return;
     createRow(picker.value);
 });
 
 function createRow(dateVal) {
-    if (!dateVal) return;
-
+    const saved = loadPrayers(dateVal) || [];
     const row = document.createElement("tr");
+
     const dateCell = document.createElement("td");
-    dateCell.textContent = new Date(dateVal).toLocaleDateString("ar-EG");
+    dateCell.textContent = dateVal;
     row.appendChild(dateCell);
 
-    const prayers = ['الفجر','الضحى','الظهر','العصر','المغرب','العشاء'];
+    const names = ["الفجر","الضحى","الظهر","العصر","المغرب","العشاء"];
     const boxes = [];
 
-    prayers.forEach(() => {
+    names.forEach((_, i) => {
         const td = document.createElement("td");
         const box = document.createElement("div");
         box.className = "box";
 
+        if (saved[i]) box.classList.add("checked");
+
         box.onclick = () => {
             box.classList.toggle("checked");
-            const done = boxes.filter(b => b.classList.contains("checked")).length;
-            progressFill.style.width = (done / boxes.length) * 100 + "%";
+            const state = boxes.map(b => b.classList.contains("checked"));
+            savePrayers(dateVal, state);
+            updateProgress(state);
         };
 
+        boxes.push(box);
         td.appendChild(box);
         row.appendChild(td);
-        boxes.push(box);
     });
 
     const progressTd = document.createElement("td");
@@ -132,16 +157,19 @@ function createRow(dateVal) {
     bar.className = "progress-bar";
     const fill = document.createElement("div");
     fill.className = "progress-fill";
-
     bar.appendChild(fill);
     progressTd.appendChild(bar);
     row.appendChild(progressTd);
 
-    tbody.appendChild(row);
+    function updateProgress(state) {
+        const done = state.filter(v => v).length;
+        fill.style.width = (done / 6) * 100 + "%";
+    }
 
-    var progressFill = fill;
+    if (saved.length) updateProgress(saved);
+
+    tbody.appendChild(row);
 }
 </script>
-
 </body>
 </html>
