@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>متابعة العبادات</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
-
 <style>
 body {
     margin: 0;
@@ -19,17 +18,17 @@ header {
     justify-content: center;
     gap: 10px;
     padding: 15px;
-    background: #1f1f1f;
+    background: #1e1e1e;
 }
 
 button.tab {
-    background: #2c2c2c;
+    padding: 10px 18px;
     border: none;
-    color: #fff;
-    padding: 12px 20px;
-    font-size: 16px;
+    border-radius: 8px;
     cursor: pointer;
-    border-radius: 6px;
+    font-weight: bold;
+    background: #2a2a2a;
+    color: #fff;
 }
 
 button.tab.active {
@@ -43,7 +42,6 @@ iframe {
 }
 </style>
 </head>
-
 <body>
 
 <header>
@@ -51,11 +49,11 @@ iframe {
     <button class="tab" onclick="loadPage('azkar.html', this)">📖 الأذكار والورد</button>
 </header>
 
-<iframe id="contentFrame" src="prayers.html"></iframe>
+<iframe id="content" src="prayers.html"></iframe>
 
 <script>
 function loadPage(page, btn) {
-    document.getElementById("contentFrame").src = page;
+    document.getElementById("content").src = page;
     document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
 }
