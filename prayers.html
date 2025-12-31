@@ -5,38 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>الصلوات</title>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700&display=swap" rel="stylesheet">
-
 <style>
 body {
-    font-family: 'Cairo', sans-serif;
+    font-family: Cairo, sans-serif;
     background:#121212;
     color:#eee;
     padding:20px;
+    direction: rtl;
 }
 
 .date-box {
     max-width: 260px;
-    margin: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    margin-bottom: 15px;
 }
 
-.date-box label {
-    color:#aaa;
-}
-
-.date-box input {
+.date-box input, button {
+    width: 100%;
     padding: 10px;
     border-radius: 8px;
-    border:1px solid #444;
-    background:#1f1f1f;
-    color:#fff;
+    border: none;
+    margin-top: 6px;
+    font-weight: bold;
+}
+
+button {
+    background:#4caf50;
+    color:white;
+    cursor:pointer;
 }
 
 table {
     width:100%;
-    border-collapse: collapse;
+    border-collapse:collapse;
     margin-top:20px;
 }
 
@@ -46,30 +46,24 @@ th, td {
     text-align:center;
 }
 
-th {
-    background:#1f1f1f;
-}
-
 .box {
-    width:26px;
-    height:26px;
-    border:1px solid #777;
+    width:24px;
+    height:24px;
+    border:1px solid #aaa;
     margin:auto;
     cursor:pointer;
-    display:flex;
-    align-items:center;
-    justify-content:center;
 }
 
 .checked::after {
     content:"✔";
     color:#4caf50;
+    font-weight:bold;
 }
 
 .progress-bar {
-    background:#333;
-    border-radius:5px;
     height:18px;
+    background:#333;
+    border-radius:6px;
     overflow:hidden;
 }
 
@@ -77,15 +71,17 @@ th {
     height:100%;
     width:0%;
     background:#4caf50;
-    transition:0.3s;
 }
 </style>
 </head>
 <body>
 
+<h2>🕌 متابعة الصلوات</h2>
+
 <div class="date-box">
-    <label>📅 اختر اليوم</label>
+    <label>اختر اليوم</label>
     <input type="date" id="dayPicker">
+    <button id="addDayBtn">➕ إضافة اليوم</button>
 </div>
 
 <table>
@@ -105,45 +101,54 @@ th {
 </table>
 
 <script>
-const picker = document.getElementById("dayPicker");
 const tbody = document.getElementById("tbody");
+const picker = document.getElementById("dayPicker");
+const addBtn = document.getElementById("addDayBtn");
 
-function savePrayers(date, data) {
-    localStorage.setItem("prayers_" + date, JSON.stringify(data));
-}
-
-function loadPrayers(date) {
-    return JSON.parse(localStorage.getItem("prayers_" + date));
-}
-
-const ADD_KEY = "prayer_days";
+const DAYS_KEY = "prayer_days";
 
 function getDays() {
-    return JSON.parse(localStorage.getItem(ADD_KEY)) || [];
+    return JSON.parse(localStorage.getItem(DAYS_KEY)) || [];
 }
 
-function saveDays(arr) {
-    localStorage.setItem(ADD_KEY, JSON.stringify(arr));
+function saveDays(days) {
+    localStorage.setItem(DAYS_KEY, JSON.stringify(days));
 }
 
-function renderAllDays() {
+function saveDayState(date, data) {
+    localStorage.setItem("prayer_" + date, JSON.stringify(data));
+}
+
+function loadDayState(date) {
+    return JSON.parse(localStorage.getItem("prayer_" + date));
+}
+
+addBtn.onclick = () => {
+    if (!picker.value) return;
+    let days = getDays();
+    if (!days.includes(picker.value)) {
+        days.push(picker.value);
+        saveDays(days);
+        renderAll();
+    }
+};
+
+function renderAll() {
     tbody.innerHTML = "";
     getDays().forEach(d => createRow(d));
 }
 
+function createRow(date) {
+    const tr = document.createElement("tr");
+    const saved = loadDayState(date) || [];
 
-function createRow(dateVal) {
-    const saved = loadPrayers(dateVal) || [];
-    const row = document.createElement("tr");
+    const dateTd = document.createElement("td");
+    dateTd.textContent = new Date(date).toLocaleDateString("ar-EG");
+    tr.appendChild(dateTd);
 
-    const dateCell = document.createElement("td");
-    dateCell.textContent = dateVal;
-    row.appendChild(dateCell);
-
-    const names = ["الفجر","الضحى","الظهر","العصر","المغرب","العشاء"];
     const boxes = [];
 
-    names.forEach((_, i) => {
+    ["الفجر","الضحى","الظهر","العصر","المغرب","العشاء"].forEach((_, i) => {
         const td = document.createElement("td");
         const box = document.createElement("div");
         box.className = "box";
@@ -153,13 +158,13 @@ function createRow(dateVal) {
         box.onclick = () => {
             box.classList.toggle("checked");
             const state = boxes.map(b => b.classList.contains("checked"));
-            savePrayers(dateVal, state);
-            updateProgress(state);
+            saveDayState(date, state);
+            updateProgress();
         };
 
         boxes.push(box);
         td.appendChild(box);
-        row.appendChild(td);
+        tr.appendChild(td);
     });
 
     const progressTd = document.createElement("td");
@@ -169,17 +174,18 @@ function createRow(dateVal) {
     fill.className = "progress-fill";
     bar.appendChild(fill);
     progressTd.appendChild(bar);
-    row.appendChild(progressTd);
+    tr.appendChild(progressTd);
 
-    function updateProgress(state) {
-        const done = state.filter(v => v).length;
-        fill.style.width = (done / 6) * 100 + "%";
+    function updateProgress() {
+        const done = boxes.filter(b => b.classList.contains("checked")).length;
+        fill.style.width = (done / boxes.length) * 100 + "%";
     }
 
-    if (saved.length) updateProgress(saved);
-
-    tbody.appendChild(row);
+    updateProgress();
+    tbody.appendChild(tr);
 }
+
+renderAll();
 </script>
 </body>
 </html>
