@@ -116,11 +116,21 @@ function loadPrayers(date) {
     return JSON.parse(localStorage.getItem("prayers_" + date));
 }
 
-picker.addEventListener("change", () => {
+const ADD_KEY = "prayer_days";
+
+function getDays() {
+    return JSON.parse(localStorage.getItem(ADD_KEY)) || [];
+}
+
+function saveDays(arr) {
+    localStorage.setItem(ADD_KEY, JSON.stringify(arr));
+}
+
+function renderAllDays() {
     tbody.innerHTML = "";
-    if (!picker.value) return;
-    createRow(picker.value);
-});
+    getDays().forEach(d => createRow(d));
+}
+
 
 function createRow(dateVal) {
     const saved = loadPrayers(dateVal) || [];
